@@ -8,9 +8,10 @@ import json
 import shutil
 from datetime import datetime, timezone
 import pandas as pd
-from transformers import AutoModel, AutoTokenizer
 
 EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
+CLIP_MODEL_NAME = "openai/clip-vit-base-patch32"
+CLIP_MODEL_SIZE = 512
 
 class FeastService:
     _instance = None
@@ -129,6 +130,24 @@ class FeastService:
         top_item_ids = results_df["item_id"].tolist()
         results = self._item_ids_to_product_list(top_item_ids)
         return results
+    
+    def search_item_by_image_link(self, image_link, k=5):
+        from public.service.clip_encoder import ClipEncoder
+        from public.service.search_by_image import SearchByImageService
+        clip_encoder = ClipEncoder()
+        search_image_service = SearchByImageService(self.store, clip_encoder)
+        results_df = search_image_service.search_by_image_link(image_link, k)
+        print(results_df)
+        top_item_ids = results_df["item_id"].tolist()
+        results = self._item_ids_to_product_list(top_item_ids)
+        return results
+        
+
+
+
+    
+    
+    
     
     
 
